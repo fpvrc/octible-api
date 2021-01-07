@@ -1,0 +1,36 @@
+{
+  "name": "octible-api",
+  "version": "1.0.0",
+  "description": "Backend for Octible",
+  "main": "server.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "start": "node server",
+    "server": "nodemon server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Octible-Corp/octible-api.git"
+  },
+  "author": "Octible Inc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Octible-Corp/octible-api/issues"
+  },
+  "homepage": "https://github.com/Octible-Corp/octible-api#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "config": "^3.3.3",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.6.3",
+    "nodemailer": "^6.4.17",
+    "uniqid": "^5.2.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}

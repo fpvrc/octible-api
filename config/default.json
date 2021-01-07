@@ -1,0 +1,6 @@
+{
+  "mongoURI": "mongodb+srv://den-api:CYm44suBueULtYGA@cluster1.fmoch.mongodb.net/production?retryWrites=true&w=majority",
+  "jwtSecret": "mysecrettoken",
+  "dev": "",
+  "production": ""
+}
