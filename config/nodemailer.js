@@ -1,13 +1,12 @@
 const nodemailer = require('nodemailer');
 
 let transporter = nodemailer.createTransport({
-  host: 'smtp.sendgrid.net',
-  port: 465,
-  secure: true,
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
   auth: {
-    user: 'apikey',
-    pass:
-      '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',
+    user: 'octible@gmail.com',
+    pass: '123Octible123',
   },
   tls: {
     rejectUnauthorized: false,

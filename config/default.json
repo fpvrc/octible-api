@@ -1,5 +1,5 @@
 {
-  "mongoURI": "mongodb+srv://den-api:CYm44suBueULtYGA@cluster1.fmoch.mongodb.net/production?retryWrites=true&w=majority",
+  "mongoURI": "mongodb+srv://jari:jari123@cluster0-wx1cj.mongodb.net/link?retryWrites=true&w=majority",
   "jwtSecret": "mysecrettoken",
   "dev": "",
   "production": ""
