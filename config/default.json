@@ -1,6 +1,6 @@
 {
   "mongoURI": "mongodb+srv://jari:jari123@cluster0-wx1cj.mongodb.net/link?retryWrites=true&w=majority",
   "jwtSecret": "mysecrettoken",
-  "dev": "",
-  "production": ""
+  "apiURL": "localhost:5000",
+  "reactURL": "localhost:3000"
 }
