@@ -3,6 +3,10 @@ const AWS = require('aws-sdk');
 const config = require('config');
 const fs = require('fs');
 const readFileAsync = promisify(fs.readFile);
+const s3 = new AWS.S3({
+  accessKeyId: 'AKIARIRKFSJMZMPIFA7X',
+  secretAccessKey: '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',
+});
 
 const makeQR = async (url_id) => {
   try {
@@ -16,23 +20,20 @@ const makeQR = async (url_id) => {
   }
 };
 
-const uploadQr = async (url_id) => {
+const uploadQr = async (user_id, url_id) => {
   try {
-    const s3 = new AWS.S3({
-      accessKeyId: 'AKIARIRKFSJMZMPIFA7X',
-      secretAccessKey: '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',
-    });
-
     const data = await readFileAsync(`./qrCodes/${url_id}.png`);
     const params = {
       Bucket: 'octible',
-      Key: `${s3Folder}/${file.fileInfo.FileName}`,
+      Key: `${user_id}/${url_id}.png`,
       Body: data,
     };
     await s3.upload(params).promise();
     (async () => {
-      fs.unlink(`./staging/${file.fileInfo.FileName}`, (err) => {
-        if (err) return console.log(err);
+      fs.unlink(`./qrCodes/${url_id}.png`, (err) => {
+        if (err) {
+          throw new Error();
+        }
       });
     })();
 
