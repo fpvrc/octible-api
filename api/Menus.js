@@ -4,7 +4,6 @@ const config = require('config');
 const { db } = require('../config/mongo');
 const auth = require('../middleware/auth');
 const AWS = require('aws-sdk');
-const uniqid = require('uniqid');
 const PDFDocument = require('pdfkit');
 var blobStream = require('blob-stream');
 const fs = require('fs');
@@ -69,7 +68,7 @@ router.post('/s3', auth, async (req, res) => {
   try {
     const s3Folder = req.body.user_id;
     const uploadType = req.body.uploadType;
-    const name = `${uniqid()}${uploadType}`;
+    const name = `${nanoid(6)}${uploadType}`;
     const params = {
       Bucket: 'octible',
       Fields: {
@@ -146,6 +145,7 @@ router.post('/step_one', auth, async (req, res) => {
           });
         })();
       */
+      menu_id = nanoid();
 
       await db().collection('menus').insertOne({
         menu_id: menu_id,
@@ -445,7 +445,7 @@ router.post('/qr', auth, async (req, res) => {
   console.log('QR Action Fired...');
   try {
     //This below action fires every time you press the button
-    const qrId = uniqid();
+    const qrId = nanoid(10);
     const qrBase64 = await makeQR(qrId);
     //PDF Stuff
     console.log('Creating PDF');

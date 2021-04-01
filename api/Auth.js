@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const { db } = require('../config/mongo');
-const uniqid = require('uniqid');
+const { nanoid } = require('nanoid');
 const { transporter } = require('../config/nodemailer');
 const { registerEmail } = require('./workers/getEmails');
 const url = config.get('apiURL');
@@ -105,9 +105,8 @@ router.post('/register', async (req, res) => {
       return res.status(400).send('User Already Exists');
     }
 
-    const user_id = uniqid();
-    const verify_hash = uniqid();
-    console.log('Made it here');
+    const user_id = nanoid(10);
+    const verify_hash = nanoid(10);
 
     await db().collection('users').insertOne({
       user_id: user_id,
@@ -175,7 +174,7 @@ router.post('/fire', async (req, res) => {
 router.post('/forgot_password', async (req, res) => {
   try {
     const { email } = req.body;
-    const new_code = uniqid();
+    const new_code = nanoid(10);
     await db()
       .collection('users')
       .updateOne({ email: email }, { $set: { reset_password: new_code } });
