@@ -9,6 +9,7 @@ const PDFDocument = require('pdfkit');
 var blobStream = require('blob-stream');
 const fs = require('fs');
 const { makeQR } = require('./workers/makeQR');
+const { nanoid } = require('nanoid');
 
 // @route    POST octible.io/menus/:menu_id
 // @desc     User scans QR and this entpoint is hit
@@ -158,6 +159,101 @@ router.post('/step_one', auth, async (req, res) => {
         items: items,
         active: false,
         qr_url: null,
+        redeem_code: null,
+        new: false,
+      });
+    } else {
+      await db()
+        .collection('menus')
+        .updateOne(
+          { menu_id: menu_id, user_id: user_id },
+          {
+            $set: {
+              name: name,
+              website: website,
+              logo_photo: logo_photo,
+              background_photo: background_photo,
+              pdf: pdf,
+              sections: sections,
+              items: items,
+            },
+          }
+        );
+    }
+    let menu = await db()
+      .collection('menus')
+      .find({
+        menu_id: menu_id,
+      })
+      .next();
+    res.json(menu);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Server Errror');
+  }
+  return;
+});
+
+// @route    POST octible.io/menus/step_one_cms
+// @desc     Save step one CMS
+// @access   Private
+router.post('/step_one_cms', auth, async (req, res) => {
+  try {
+    const {
+      menu_id,
+      user_id,
+      name,
+      website,
+      logo_photo,
+      background_photo,
+      pdf,
+      sections,
+      items,
+      new_menu,
+    } = req.body;
+
+    if (new_menu) {
+      const redeem_code = nanoid(4); //=> "V1StGXR8_Z5jdHi6B-myT"
+      //Const url = https://www.public.octibleapi.com/menus/`${menu_id}
+      //Generate QR code with this url
+      //Save qrCode to local file
+      //Upload qrCode local file to s3 bucket => returns url location of qr file in the s3 bucket,
+      //delete qr code in local directory
+      //save qrCode file URL to menu object
+
+      //makeQrCode() => returns filename.png
+
+      //read file filename.png const filePath = './qrCodes/<qrName>';
+
+      /*
+          const data = await readFileAsync(`./qrCodes/${menu_id}`);
+          const params = {
+            Bucket: 'octible',
+            Key: `${s3Folder}/${file.fileInfo.FileName}`,
+            Body: data
+          };
+          await s3.upload(params).promise();
+          (async () => {
+            fs.unlink(`./staging/${file.fileInfo.FileName}`, (err) => {
+              if (err) return console.log(err);
+            });
+          })();
+        */
+
+      await db().collection('menus').insertOne({
+        menu_id: menu_id,
+        user_id: 'octible',
+        name: name,
+        website: website,
+        logo_photo: logo_photo,
+        background_photo: background_photo,
+        pdf: pdf,
+        sections: sections,
+        items: items,
+        active: false,
+        qr_url: null,
+        redeem_code: redeem_code,
+        new: false,
       });
     } else {
       await db()
@@ -383,6 +479,46 @@ router.post('/qr', auth, async (req, res) => {
     console.error(err.message);
     return res.status(500).send('Server Error');
   }
+});
+
+// @route    POST octible.io/menus/get_all_menus
+// @desc     Get all menus for Octible CMS
+// @access   Private
+router.post('/get_all_menus', auth, async (req, res) => {
+  try {
+    const { user_id } = req.body;
+    let menus = await db().collection('menus').find({}).toArray();
+    res.json(menus);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Server Error');
+  }
+  return;
+});
+
+// @route    POST octible.io/menus/redeem
+// @desc     Redeem, change menu ownership
+// @access   Private
+router.post('/redeem', auth, async (req, res) => {
+  try {
+    const { user_id, redeem_code } = req.body;
+
+    await db()
+      .collection('menus')
+      .updateOne(
+        { redeem_code: redeem_code, user_id: 'octible' },
+        { $set: { user_id: user_id, redeem_code: null } }
+      );
+    let menus = await db()
+      .collection('menus')
+      .find({ user_id: user_id })
+      .toArray();
+    res.json(menus);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Server Error');
+  }
+  return;
 });
 
 module.exports = router;
