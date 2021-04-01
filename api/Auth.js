@@ -105,8 +105,8 @@ router.post('/register', async (req, res) => {
       return res.status(400).send('User Already Exists');
     }
 
-    const user_id = nanoid(10);
-    const verify_hash = nanoid(10);
+    const user_id = nanoid(12);
+    const verify_hash = nanoid(12);
 
     await db().collection('users').insertOne({
       user_id: user_id,
@@ -174,7 +174,7 @@ router.post('/fire', async (req, res) => {
 router.post('/forgot_password', async (req, res) => {
   try {
     const { email } = req.body;
-    const new_code = nanoid(10);
+    const new_code = nanoid(12);
     await db()
       .collection('users')
       .updateOne({ email: email }, { $set: { reset_password: new_code } });

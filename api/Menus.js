@@ -7,7 +7,7 @@ const AWS = require('aws-sdk');
 const PDFDocument = require('pdfkit');
 var blobStream = require('blob-stream');
 const fs = require('fs');
-const { makeQR } = require('./workers/makeQR');
+const { makeQR, uploadQr } = require('./workers/makeQR');
 const { nanoid } = require('nanoid');
 
 // @route    POST octible.io/menus/:menu_id
@@ -39,7 +39,9 @@ router.post('/ping', async (req, res) => {
   //delete qr code in local directory
   //save qrCode file URL to menu object
 
-  //makeQrCode() => returns filename.png
+  const qrRes = await makeQR('test');
+  const upload_res = await uploadQr(qrRes);
+  console.log(qrRes);
 
   //read file filename.png const filePath = './qrCodes/<qrName>';
 
@@ -145,11 +147,13 @@ router.post('/step_one', auth, async (req, res) => {
           });
         })();
       */
-      menu_id = nanoid();
+      const new_menu_id = nanoid(12);
+      const url_id = nanoid(12);
 
       await db().collection('menus').insertOne({
-        menu_id: menu_id,
+        menu_id: new_menu_id,
         user_id: user_id,
+        url_id: url_id,
         name: name,
         website: website,
         logo_photo: logo_photo,
