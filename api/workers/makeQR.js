@@ -1,14 +1,14 @@
 let QRCode = require('qrcode');
+const AWS = require('aws-sdk');
 const config = require('config');
+const fs = require('fs');
+const readFileAsync = promisify(fs.readFile);
 
 const makeQR = async (url_id) => {
   try {
-    //QR stuff
     const cache_path = `./qrCodes/${url_id}.png`;
     const qr_url = `${config.get('apiURL')}/menus/${url_id}`;
-    //const path = `https://www.public.octibleapi.com/menus/${qrId}`
     await QRCode.toFile(cache_path, qr_url);
-    //const qrBase64 = await QRCode.toDataURL(qr_url); //FIXME?
     return url_id;
   } catch (error) {
     console.log(error);
@@ -18,13 +18,25 @@ const makeQR = async (url_id) => {
 
 const uploadQr = async (url_id) => {
   try {
-    //QR stuff
-    const cache_path = `./qrCodes/${url_id}.png`;
-    const qr_url = `${config.get('apiURL')}/menus/${url_id}`;
-    //const path = `https://www.public.octibleapi.com/menus/${qrId}`
-    await QRCode.toFile(cache_path, qr_url);
-    //const qrBase64 = await QRCode.toDataURL(qr_url); //FIXME?
-    return url_id;
+    const s3 = new AWS.S3({
+      accessKeyId: 'AKIARIRKFSJMZMPIFA7X',
+      secretAccessKey: '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',
+    });
+
+    const data = await readFileAsync(`./qrCodes/${url_id}.png`);
+    const params = {
+      Bucket: 'octible',
+      Key: `${s3Folder}/${file.fileInfo.FileName}`,
+      Body: data,
+    };
+    await s3.upload(params).promise();
+    (async () => {
+      fs.unlink(`./staging/${file.fileInfo.FileName}`, (err) => {
+        if (err) return console.log(err);
+      });
+    })();
+
+    return;
   } catch (error) {
     console.log(error);
     throw new Error();

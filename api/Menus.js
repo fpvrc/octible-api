@@ -40,7 +40,8 @@ router.post('/ping', async (req, res) => {
   //save qrCode file URL to menu object
 
   const qrRes = await makeQR('test');
-  const upload_res = await uploadQr(qrRes);
+  const user_id = '1234';
+  const upload_res = await uploadQr(user_id, qrRes);
   console.log(qrRes);
 
   //read file filename.png const filePath = './qrCodes/<qrName>';
