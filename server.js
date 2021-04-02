@@ -18,7 +18,6 @@ AWS.config.update({
   region: 'us-east-2',
   signatureVersion: 'v4',
 });
-console.log('Hellloo');
 
 //Cores
 app.use(cors());
