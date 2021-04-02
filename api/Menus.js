@@ -120,6 +120,7 @@ router.post('/step_one', auth, async (req, res) => {
       sections,
       items,
       new_menu,
+      restaurant_id,
     } = req.body;
 
     if (new_menu) {
@@ -153,6 +154,7 @@ router.post('/step_one', auth, async (req, res) => {
 
       await db().collection('menus').insertOne({
         menu_id: new_menu_id,
+        restaurant_id: restaurant_id,
         user_id: user_id,
         url_id: url_id,
         name: name,
@@ -215,6 +217,7 @@ router.post('/step_one_cms', auth, async (req, res) => {
       sections,
       items,
       new_menu,
+      restaurant_id,
     } = req.body;
 
     if (new_menu) {
@@ -247,6 +250,7 @@ router.post('/step_one_cms', auth, async (req, res) => {
 
       await db().collection('menus').insertOne({
         menu_id: menu_id,
+        restaurant_id: null,
         user_id: 'octible',
         name: name,
         website: website,
@@ -506,13 +510,19 @@ router.post('/get_all_menus', auth, async (req, res) => {
 // @access   Private
 router.post('/redeem', auth, async (req, res) => {
   try {
-    const { user_id, redeem_code } = req.body;
+    const { user_id, restaurant_id, redeem_code } = req.body;
 
     await db()
       .collection('menus')
       .updateOne(
         { redeem_code: redeem_code, user_id: 'octible' },
-        { $set: { user_id: user_id, redeem_code: null } }
+        {
+          $set: {
+            user_id: user_id,
+            restaurant_id: restaurant_id,
+            redeem_code: null,
+          },
+        }
       );
     let menus = await db()
       .collection('menus')
