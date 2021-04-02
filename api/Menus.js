@@ -41,8 +41,8 @@ router.post('/ping', async (req, res) => {
 
   const qrRes = await makeQR('test');
   const user_id = '1234';
-  const upload_res = await uploadQr(user_id, qrRes);
-  console.log(qrRes);
+  await uploadQr(user_id, qrRes);
+  console.log('done');
 
   //read file filename.png const filePath = './qrCodes/<qrName>';
 

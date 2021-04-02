@@ -2,6 +2,7 @@ let QRCode = require('qrcode');
 const AWS = require('aws-sdk');
 const config = require('config');
 const fs = require('fs');
+const { promisify } = require('util');
 const readFileAsync = promisify(fs.readFile);
 const s3 = new AWS.S3({
   accessKeyId: 'AKIARIRKFSJMZMPIFA7X',
