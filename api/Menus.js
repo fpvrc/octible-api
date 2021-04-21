@@ -8,7 +8,11 @@ const PDFDocument = require('pdfkit');
 var blobStream = require('blob-stream');
 const fs = require('fs');
 const { makeQR, uploadQr } = require('./workers/makeQR');
-const { nanoid } = require('nanoid');
+const { customAlphabet } = require('nanoid');
+
+const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 12);
+const nanoidRedeem = customAlphabet('abcdefghijklmnopqrstuvwxyz', 4);
+const nanoidPhoto = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
 // @route    POST octible.io/menus/:menu_id
 // @desc     User scans QR and this entpoint is hit
@@ -71,7 +75,7 @@ router.post('/s3', auth, async (req, res) => {
   try {
     const s3Folder = req.body.user_id;
     const uploadType = req.body.uploadType;
-    const name = `${nanoid(6)}${uploadType}`;
+    const name = `${nanoidPhoto()}${uploadType}`;
     const params = {
       Bucket: 'octible',
       Fields: {
@@ -122,6 +126,7 @@ router.post('/step_one', auth, async (req, res) => {
       new_menu,
       restaurant_id,
     } = req.body;
+    let local_menu_id = menu_id;
 
     if (new_menu) {
       //Const url = https://www.public.octibleapi.com/menus/`${menu_id}
@@ -150,8 +155,10 @@ router.post('/step_one', auth, async (req, res) => {
         })();
       */
 
-      const new_menu_id = nanoid(12);
-      const url_id = nanoid(12);
+      const new_menu_id = nanoid();
+      const url_id = nanoid();
+      local_menu_id = new_menu_id;
+      console.log(local_menu_id);
 
       await db().collection('menus').insertOne({
         menu_id: new_menu_id,
@@ -191,7 +198,7 @@ router.post('/step_one', auth, async (req, res) => {
     let menu = await db()
       .collection('menus')
       .find({
-        menu_id: menu_id,
+        menu_id: local_menu_id,
       })
       .next();
     res.json(menu);
@@ -222,7 +229,7 @@ router.post('/step_one_cms', auth, async (req, res) => {
     } = req.body;
 
     if (new_menu) {
-      const redeem_code = nanoid(4); //=> "V1StGXR8_Z5jdHi6B-myT"
+      const redeem_code = nanoidRedeem(); //=> "V1StGXR8_Z5jdHi6B-myT"
       //Const url = https://www.public.octibleapi.com/menus/`${menu_id}
       //Generate QR code with this url
       //Save qrCode to local file
@@ -455,7 +462,7 @@ router.post('/qr', auth, async (req, res) => {
   console.log('QR Action Fired...');
   try {
     //This below action fires every time you press the button
-    const qrId = nanoid(10);
+    const qrId = nanoid();
     const qrBase64 = await makeQR(qrId);
     //PDF Stuff
     console.log('Creating PDF');
