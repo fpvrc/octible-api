@@ -106,12 +106,12 @@ router.post('/register', async (req, res) => {
     }
 
     const user_id = nanoid(12);
-    const restaurant_id = nanoid(12);
+
     const verify_hash = nanoid(12);
 
     await db().collection('users').insertOne({
       user_id: user_id,
-      restaurant_id: restaurant_id,
+      restaurant_id: null,
       email: email,
       created_at: new Date().toISOString(),
       verify_hash: verify_hash,
