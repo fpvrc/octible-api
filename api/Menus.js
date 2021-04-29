@@ -571,4 +571,24 @@ router.post('/redeem', auth, async (req, res) => {
   return;
 });
 
+// @route    POST octible.io/menus/redeem
+// @desc     Redeem, change menu ownership
+// @access   Private
+router.post('/get_menu', async (req, res) => {
+  try {
+    const { restaurant_id } = req.body;
+    console.log(restaurant_id);
+    let menu = await db()
+      .collection('menus')
+      .find({ restaurant_id: restaurant_id, active: true })
+      .next();
+    console.log(menu);
+    res.json(menu);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+  return;
+});
+
 module.exports = router;
