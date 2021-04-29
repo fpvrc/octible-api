@@ -169,6 +169,7 @@ router.post('/step_one', auth, async (req, res) => {
 
       await db().collection('menus').insertOne({
         menu_id: new_menu_id,
+
         restaurant_id: restaurant_id,
         user_id: user_id,
         url_id: url_id,
@@ -223,6 +224,7 @@ router.post('/step_one_cms', auth, async (req, res) => {
   try {
     const {
       menu_id,
+      dba_id,
       user_id,
       name,
       website,
@@ -236,7 +238,6 @@ router.post('/step_one_cms', auth, async (req, res) => {
     } = req.body;
 
     let local_menu_id = menu_id;
-    let local_restaurant_id = menu_id;
 
     if (new_menu) {
       const redeem_code = nanoidRedeem(); //=> "V1StGXR8_Z5jdHi6B-myT"
@@ -266,11 +267,10 @@ router.post('/step_one_cms', auth, async (req, res) => {
           })();
         */
       local_menu_id = nanoid();
-      local_restaurant_id = nanoid();
 
       await db().collection('menus').insertOne({
         menu_id: local_menu_id,
-        restaurant_id: local_restaurant_id,
+        dba_id: dba_id,
         user_id: 'octible',
         name: name,
         website: website,
@@ -576,13 +576,13 @@ router.post('/redeem', auth, async (req, res) => {
 // @access   Private
 router.post('/get_menu', async (req, res) => {
   try {
-    const { restaurant_id } = req.body;
-    console.log(restaurant_id);
+    const { dba_id } = req.body;
+
     let menu = await db()
       .collection('menus')
-      .find({ restaurant_id: restaurant_id, active: true })
+      .find({ dba_id: dba_id, active: true })
       .next();
-    console.log(menu);
+
     res.json(menu);
   } catch (err) {
     console.error(err.message);
