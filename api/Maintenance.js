@@ -14,4 +14,11 @@ router.post('/ping', async (req, res) => {
   return;
 });
 
+// @route    GET densocial.io/maintenance/health_check
+// @desc     Test if server is healthy
+// @access   Public
+router.get('/health_check', async (req, res) => {
+  res.status(200).send();
+});
+
 module.exports = router;
