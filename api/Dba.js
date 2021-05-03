@@ -38,7 +38,7 @@ router.post('/create_dba', auth, async (req, res) => {
       logo_photo: null,
       background_photo: null,
       primary_color: null,
-      background_color: null,
+      background_color: 'white',
       title_color: null,
       sub_title_color: null,
       section_button_color: null,

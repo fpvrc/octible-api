@@ -578,12 +578,12 @@ router.post('/get_menu', async (req, res) => {
   try {
     const { dba_id } = req.body;
 
-    let menu = await db()
-      .collection('menus')
-      .find({ dba_id: dba_id, active: true })
-      .next();
+    let [menu, dba] = await Promise.all([
+      db().collection('menus').find({ dba_id: dba_id, active: true }).next(),
+      db().collection('dba').find({ dba_id: dba_id }).next(),
+    ]);
 
-    res.json(menu);
+    res.json({ menu: menu, dba: dba });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
