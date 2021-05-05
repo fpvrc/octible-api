@@ -1,8 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const config = require('config');
 const { db } = require('../config/mongo');
 const auth = require('../middleware/auth');
 const { customAlphabet } = require('nanoid');
@@ -57,6 +54,34 @@ router.post('/create_dba', auth, async (req, res) => {
 
     await db().collection('dba').insertOne(new_dba);
     res.json(new_dba);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+  return;
+});
+
+// @route    POST densocial.io/dba/save_color
+// @desc     Save Color
+// @access   private
+router.post('/save_color', auth, async (req, res) => {
+  try {
+    const { dba_id, active_color, color } = req.body;
+
+    let dba = await db().collection('dba').find({ dba_id: dba_id }).next();
+
+    dba[active_color] = color;
+
+    await db()
+      .collection('dba')
+      .updateOne(
+        { dba_id: dba_id },
+        {
+          $set: { ...dba },
+        }
+      );
+
+    res.json(dba);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
