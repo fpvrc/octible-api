@@ -268,23 +268,32 @@ router.post('/step_one_cms', auth, async (req, res) => {
         */
       local_menu_id = nanoid();
 
-      await db().collection('menus').insertOne({
-        menu_id: local_menu_id,
-        dba_id: dba_id,
-        user_id: 'octible',
-        name: name,
-        website: website,
-        logo_photo: logo_photo,
-        background_photo: background_photo,
-        pdf: pdf,
-        sections: sections,
-        items: items,
-        active: false,
-        qr_url: null,
-        redeem_code: redeem_code,
-        new: false,
-      });
+      let existing_active = await db()
+        .collection('menus')
+        .find({ dba_id: dba_id, active: true })
+        .next();
+
+      await db()
+        .collection('menus')
+        .insertOne({
+          menu_id: local_menu_id,
+          dba_id: dba_id,
+          user_id: 'octible',
+          name: name,
+          website: website,
+          logo_photo: logo_photo,
+          background_photo: background_photo,
+          pdf: pdf,
+          sections: sections,
+          items: items,
+          active: existing_active !== null ? false : true,
+          qr_url: null,
+          redeem_code: redeem_code,
+          new: false,
+        });
     } else {
+      console.log('--req body');
+      console.log(req.body);
       await db()
         .collection('menus')
         .updateOne(
