@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const { db } = require('../config/mongo');
-const { nanoid } = require('nanoid');
+const { nanoid } = require('nanoid/async');
 const { transporter } = require('../config/nodemailer');
 const { registerEmail } = require('./workers/getEmails');
 const url = config.get('apiURL');
@@ -105,17 +105,24 @@ router.post('/register', async (req, res) => {
       return res.status(400).send('User Already Exists');
     }
 
-    const user_id = nanoid(12);
+    const user_id = await nanoid(10);
+    const dba_id = await nanoid(10);
 
-    const verify_hash = nanoid(12);
+    const verify_hash = await nanoid(10);
 
-    await db().collection('users').insertOne({
-      user_id: user_id,
-      restaurant_id: null,
-      email: email,
-      created_at: new Date().toISOString(),
-      verify_hash: verify_hash,
-    });
+    await Promise.all([
+      db()
+        .collection('users')
+        .insertOne({
+          user_id: user_id,
+          dba_id: dba_id,
+          email: email,
+          created_at: new Date().toISOString(),
+          verify_hash: verify_hash,
+        })
+        .next(),
+      db().collection('dba').insertOne({ dba_id: dba_id }).next(),
+    ]);
 
     const html = registerEmail(verify_hash);
 
@@ -127,7 +134,6 @@ router.post('/register', async (req, res) => {
       html: html,
     });
     res.json('Success');
-    console.log('Success');
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Something went wrong.');
