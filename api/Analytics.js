@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
 // @route    POST densocial.io/analytics/capture_data
 // @desc     Caputre data
 // @access   private
-router.post('/capture_data', auth, async (req, res) => {
+router.post('/capture_data', async (req, res) => {
   try {
     const { data } = req.body;
     await db().collection('analytics').insertOne(data);
