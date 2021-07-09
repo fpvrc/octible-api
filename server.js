@@ -38,7 +38,7 @@ app.use('/dba', require('./api/Dba'));
 //maintenance
 app.use('/maintenance', require('./api/Maintenance'));
 
-//Analytics
+//dba
 app.use('/analytics', require('./api/Analytics'));
 
 //Listen on port 5000 (local) or env.PORT for (production)

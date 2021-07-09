@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { feedbackEmail } = require('./workers/getEmails');
+const { db } = require('../config/mongo');
 const auth = require('../middleware/auth');
-// @route    POST octible.io/feedback
-// @desc     Ping server
-// @access   Public
-router.post('/feedback', auth, async (req, res) => {
+
+// @route    POST densocial.io/analytics/capture_data
+// @desc     Caputre data
+// @access   private
+router.post('/capture_data', async (req, res) => {
   try {
-    console.log("Sup");
-    feedbackEmail(req);
-    res.json('Pong');
+    const { data } = req.body;
+    await db().collection('analytics').insertOne(data);
+    res.status(200).send();
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
