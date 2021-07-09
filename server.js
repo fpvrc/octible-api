@@ -35,8 +35,11 @@ app.use('/menus', require('./api/Menus'));
 //dba
 app.use('/dba', require('./api/Dba'));
 
-//dba
+//maintenance
 app.use('/maintenance', require('./api/Maintenance'));
+
+//Analytics
+app.use('/analytics', require('./api/Analytics'));
 
 //Listen on port 5000 (local) or env.PORT for (production)
 const PORT = process.env.PORT || 5000;
