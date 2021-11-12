@@ -12,12 +12,6 @@ connectDB();
 connectSMTP();
 
 //Configure AWS params
-AWS.config.update({
-  accessKeyId: 'AKIARIRKFSJMZMPIFA7X',
-  secretAccessKey: '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',
-  region: 'us-east-2',
-  signatureVersion: 'v4',
-});
 
 //Cores
 app.use(cors());
